@@ -245,3 +245,4 @@ Contributions are welcome! Feel free to submit issues or pull requests.
 Built using:
 - Python standard library
 - NVIDIA System Management Interface (`nvidia-smi`)
+- Lovely Copilot
