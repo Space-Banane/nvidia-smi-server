@@ -49,8 +49,12 @@ fi
 echo "[3/7] Installing service files..."
 INSTALL_DIR="/opt/nvidia-smi-server"
 mkdir -p "$INSTALL_DIR"
-cp main.py "$INSTALL_DIR/"
+
+# Copy all files from current directory to installation directory
+echo "Copying all project files to $INSTALL_DIR..."
+cp -r * "$INSTALL_DIR/" 2>/dev/null || true
 chmod +x "$INSTALL_DIR/main.py"
+chmod +x "$INSTALL_DIR/setup.sh" 2>/dev/null || true
 
 if [ ! -f "nvidia-smi-server.service" ]; then
     echo "ERROR: nvidia-smi-server.service not found!"
@@ -68,10 +72,18 @@ systemctl daemon-reload
 echo "✓ Systemd daemon reloaded"
 echo ""
 
-# 5. Enable and start the service
-echo "[5/7] Enabling and starting nvidia-smi-server service..."
+# 5. Enable and restart the service
+echo "[5/7] Enabling and restarting nvidia-smi-server service..."
 systemctl enable nvidia-smi-server.service
-systemctl start nvidia-smi-server.service
+
+# Check if service is already running
+if systemctl is-active --quiet nvidia-smi-server.service; then
+    echo "Service is running, restarting to apply updates..."
+    systemctl restart nvidia-smi-server.service
+else
+    echo "Starting service for the first time..."
+    systemctl start nvidia-smi-server.service
+fi
 echo "✓ Service enabled and started"
 echo ""
 
